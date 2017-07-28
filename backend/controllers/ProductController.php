@@ -8,6 +8,9 @@ use backend\models\ProductSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
+use backend\models\Warehouse;
+use backend\models\Condition;
 
 /**
  * ProductController implements the CRUD actions for Product model.
@@ -65,7 +68,22 @@ class ProductController extends Controller
     {
         $model = new Product();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+
+            $model->save();
+            
+            $var_warehouse = ArrayHelper::getValue(Yii::$app->request->post(), 'Product.warehouses');
+            $var_condition = ArrayHelper::getValue(Yii::$app->request->post(), 'Product.conditions');
+            
+//            echo '<pre>';
+//            print_r($var_condition);
+//            echo '</pre>';
+            
+            $model_warehouse = Warehouse::findOne($var_warehouse);
+            $model_condition = Condition::findOne($var_condition);
+            
+            
+            $model->link('warehouses', $model_warehouse, ['condition_id' => $model_condition->id]);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -101,6 +119,15 @@ class ProductController extends Controller
      */
     public function actionDelete($id)
     {
+        //$model = $this->findModel($id);
+        $model_product = Product::findOne(Yii::$app->request->get('id'));
+                
+        $warehouses = $model_product -> getWarehouses_custom();
+       
+        
+        $model_product->unlink('warehouses', $warehouses[0],$delete = true);
+        
+        
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

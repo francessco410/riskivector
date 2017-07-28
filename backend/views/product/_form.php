@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use backend\models\Warehouse;
+use backend\models\Category;
+use backend\models\Condition;
 /* @var $this yii\web\View */
 /* @var $model backend\models\Product */
 /* @var $form yii\widgets\ActiveForm */
@@ -15,7 +17,15 @@ use backend\models\Warehouse;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'category_id')->textInput() ?>
+    <?= $form->field($model, 'category_id')->dropDownList(    
+            ArrayHelper::map(Category::find()->all(),'id','name'),
+            ['prompt' => 'Select category']
+    )?>
+    
+    <?= $form->field($model, 'conditions')->dropDownList(    
+            ArrayHelper::map(Condition::find()->all(),'id','type'),
+            ['prompt' => 'Select condition']
+    ) ?>
     
     <?= $form->field($model, 'warehouses')->dropDownList(    
             ArrayHelper::map(Warehouse::find()->all(),'id','address'),
