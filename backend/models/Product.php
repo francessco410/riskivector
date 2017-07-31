@@ -74,6 +74,17 @@ class Product extends \yii\db\ActiveRecord
         return $this->hasMany(Warehouse::className(), ['id' => 'warehouse_id'])
                 ->viaTable('product_has_condition_warehouse', ['product_id' => 'id']);
     }
+    
+    public function getWarehouses_custom()
+    {
+        return Warehouse::findBySql("SELECT warehouse_id as id FROM product_has_condition_warehouse WHERE product_id={$this->id}")->all();
+    }
+    
+    public function getConditions()
+    {
+        return $this->hasMany(Condition::className(), ['id' => 'condition_id'])
+                ->viaTable('product_has_condition_warehouse', ['product_id' => 'id']);
+    }
 
     /**
      * @return \yii\db\ActiveQuery
