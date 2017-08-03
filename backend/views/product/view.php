@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\Product */
@@ -28,9 +29,20 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
             'name',
-            'category_id',
+            'category.name',
+            [
+                'label' => 'Conditions',
+                'format'=>'raw',
+                'value'=> function($model){
+                    $out = '';
+                    foreach($model->productHasConditionWarehouses as $PHCW){
+                        $out .= '<b>'.$PHCW->condition->type.'</b>:<tb> '.$PHCW['amount'];
+                        $out .= '<br>';
+                    }
+                    return $out;
+                },
+            ],
         ],
     ]) ?>
 

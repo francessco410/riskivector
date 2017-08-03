@@ -136,16 +136,56 @@ class ProductController extends Controller
      * @return mixed
      */
     public function actionUpdate($id)
-    {
+    {        
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        
+        
+        $modelPHCW = new ProductHasConditionWarehouse();
+        $modelPHCW -> product_id = $model->id;
+        $modelPHCW = $model -> productHasConditionWarehouses;
+        
+      
+        if ($model->load(Yii::$app->request->post())) {
+        
+            $modelPHCW = Model::createMultiple(ProductHasConditionWarehouse::classname());
+            Model::loadMultiple($modelPHCW, Yii::$app->request->post());
+            
+            
+            // validate all models
+            $valid = $model->validate();
+            $valid = Model::validateMultiple($modelPHCW) && $valid;
+            
+            if ($valid) {
+                $objectArr = ProductHasConditionWarehouse::find()->where(['product_id'=>$model->id])->all();
+                
+                try {
+                    if ($flag = $model->save(false) && isset($objectArr)) {
+                        foreach ($objectArr as $object){
+                            $object->delete(); 
+                        }
+                        
+                        foreach ($modelPHCW as $modelphcw) {
+                            $modelphcw->product_id = $model->id;
+                            
+                            if (! ($flag = $modelphcw->save(false))) {
+                                break;
+                            }
+                        }
+                    }
+                    if ($flag) {
+                        return $this->redirect(['view', 'id' => $model->id]);
+                    }
+                } catch (Exception $e) {
+                    //$transaction->rollBack();
+                }
+            }
+            $model->save();
         }
+
+        return $this->render('update', [
+            'model' => $model,
+            'modelPHCW' => (empty($modelPHCW)) ? [new ProductHasConditionWarehouse] : $modelPHCW
+        ]);
     }
 
     /**
