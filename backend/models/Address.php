@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace backend\models;
 
 use Yii;
 
@@ -53,6 +53,6 @@ class Address extends \yii\db\ActiveRecord
      */
     public function getBuildings()
     {
-        return $this->hasMany(Building::className(), ['address_id1' => 'id']);
+        return $this->hasMany(Building::className(), ['address_id' => 'id']);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace backend\models;
 
 use Yii;
 
@@ -10,9 +10,9 @@ use Yii;
  * @property integer $id
  * @property string $name
  * @property integer $number
- * @property integer $address_id1
+ * @property integer $address_id
  *
- * @property Address $addressId1
+ * @property Address $addressId
  * @property Flat[] $flats
  */
 class Building extends \yii\db\ActiveRecord
@@ -31,10 +31,10 @@ class Building extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'number', 'address_id1'], 'required'],
-            [['number', 'address_id1'], 'integer'],
+            [['name', 'number', 'address_id'], 'required'],
+            [['number', 'address_id'], 'integer'],
             [['name'], 'string', 'max' => 45],
-            [['address_id1'], 'exist', 'skipOnError' => true, 'targetClass' => Address::className(), 'targetAttribute' => ['address_id1' => 'id']],
+            [['address_id'], 'exist', 'skipOnError' => true, 'targetClass' => Address::className(), 'targetAttribute' => ['address_id' => 'id']],
         ];
     }
 
@@ -47,16 +47,16 @@ class Building extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
             'number' => 'Number',
-            'address_id1' => 'Address Id1',
+            'address_id' => 'Address Id',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAddressId1()
+    public function getAddressId()
     {
-        return $this->hasOne(Address::className(), ['id' => 'address_id1']);
+        return $this->hasOne(Address::className(), ['id' => 'address_id']);
     }
 
     /**
