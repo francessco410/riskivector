@@ -32,7 +32,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
     
     <div class="row">
         <div class="panel panel-default">
-            <div class="panel-heading"><h4>Warehouses</h4></div>
+            <div class="panel-heading"><h5>Warehouses</h5></div>
             <div class="panel-body">
                  <?php DynamicFormWidget::begin([
                     'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
@@ -66,16 +66,22 @@ use wbraganca\dynamicform\DynamicFormWidget;
                             <?php
                                 // necessary for update action.
                                 if (! $modelPHCW->isNewRecord) {
-                                    echo Html::activeHiddenInput($modelPHCW, "[{$i}]id");
+                                    echo Html::activeHiddenInput($modelPHCW, "[{$i}]product_id");
                                 }
                             ?>
                             
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <?= $form->field($modelPHCW, "[{$i}]warehouse_id")->textInput(['maxlength' => true]) ?>
+                                    <?= $form->field($modelPHCW, "[{$i}]warehouse_id")->dropDownList(    
+                                        ArrayHelper::map(Warehouse::find()->all(),'id','address'),
+                                        ['prompt' => 'Select warehouse']
+                                   )?>
                                 </div>
                                 <div class="col-sm-6">
-                                    <?= $form->field($modelPHCW, "[{$i}]condition_id")->textInput(['maxlength' => true]) ?>
+                                   <?= $form->field($modelPHCW, "[{$i}]condition_id")->dropDownList(    
+                                        ArrayHelper::map(Condition::find()->all(),'id','type'),
+                                        ['prompt' => 'Select condition']
+                                   )?>
                                 </div>
                                  <div class="col-sm-6">
                                     <?= $form->field($modelPHCW, "[{$i}]amount")->textInput(['maxlength' => true]) ?>

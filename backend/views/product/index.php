@@ -29,17 +29,28 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
             'name',
-            'category.name',
-            
+            [
+                'attribute' => 'category_id',
+                'value' => 'category.name',
+            ],
             [
                 'label' => 'Warehouse',
                 'value'=> function($model){
                     return implode(', ',ArrayHelper::map($model->warehouses, 'id', 'address'));
                 }
             ],
-
+            [
+                'attribute' => 'productHasConditionWarehouses.amount',
+//                'label' => 'Amount',
+                'value'=> function($model){
+                $amount = 0;
+                foreach($model->productHasConditionWarehouses as $PHCW){
+                    $amount += $PHCW->amount;
+                }
+                    return $amount;
+                }
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

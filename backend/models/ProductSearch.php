@@ -18,8 +18,8 @@ class ProductSearch extends Product
     public function rules()
     {
         return [
-            [['id', 'category_id'], 'integer'],
-            [['name'], 'safe'],
+            [['id'],'integer'],
+            [['name','category_id','zzamount'], 'safe'],
         ];
     }
 
@@ -47,6 +47,7 @@ class ProductSearch extends Product
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            
         ]);
 
         $this->load($params);
@@ -56,14 +57,16 @@ class ProductSearch extends Product
             // $query->where('0=1');
             return $dataProvider;
         }
+        
+        $query ->joinWith('category');
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'category_id' => $this->category_id,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['like', 'product.name', $this->name])
+              ->andFilterWhere(['like', 'category.name', $this->category_id]);
 
         return $dataProvider;
     }

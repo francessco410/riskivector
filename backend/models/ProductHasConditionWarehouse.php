@@ -47,8 +47,8 @@ class ProductHasConditionWarehouse extends \yii\db\ActiveRecord
     {
         return [
             'product_id' => 'Product ID',
-            'condition_id' => 'Condition ID',
-            'warehouse_id' => 'Warehouse ID',
+            'condition_id' => 'Condition',
+            'warehouse_id' => 'Warehouse',
             'amount' => 'Amount',
         ];
     }
