@@ -4,8 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8542d386e12e65b1839a1b046926426d",
+    "content-hash": "fc7b62d19ff3291f1aef754890d876a7",
     "packages": [
+        {
+            "name": "amilna/yii2-elevatezoom",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amilna/yii2-elevatezoom.git",
+                "reference": "5fdabac758a6c1cbfe6460d47ea7919b3dd27566"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amilna/yii2-elevatezoom/zipball/5fdabac758a6c1cbfe6460d47ea7919b3dd27566",
+                "reference": "5fdabac758a6c1cbfe6460d47ea7919b3dd27566",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "amilna\\elevatezoom\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Amilna",
+                    "homepage": "https://github.com/amilna/"
+                }
+            ],
+            "description": "Elevatezoom widget for Yii2",
+            "keywords": [
+                "elevatezoom",
+                "gallery",
+                "image",
+                "widget",
+                "yii2"
+            ],
+            "time": "2015-03-13 09:57:59"
+        },
         {
             "name": "bower-asset/bootstrap",
             "version": "v3.3.7",
@@ -3202,7 +3245,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "kartik-v/yii2-widget-select2": 20
     },

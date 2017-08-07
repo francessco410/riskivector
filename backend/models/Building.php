@@ -44,7 +44,7 @@ class Building extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id' => 'Building Name',
             'name' => 'Name',
             'number' => 'Number',
             'address_id' => 'Address Id',

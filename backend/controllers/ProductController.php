@@ -75,6 +75,10 @@ class ProductController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             $modelPHCW = Model::createMultiple(ProductHasConditionWarehouse::classname());
+            echo '<pre>';
+            print_r(Yii::$app->request->post());
+            echo '</pre>';
+            die();
             Model::loadMultiple($modelPHCW, Yii::$app->request->post());
 
             // validate all models
@@ -144,9 +148,10 @@ class ProductController extends Controller
         $modelPHCW -> product_id = $model->id;
         $modelPHCW = $model -> productHasConditionWarehouses;
         
-      
-        if ($model->load(Yii::$app->request->post())) {
         
+        if ($model->load(Yii::$app->request->post())) {
+            
+            
             $modelPHCW = Model::createMultiple(ProductHasConditionWarehouse::classname());
             Model::loadMultiple($modelPHCW, Yii::$app->request->post());
             

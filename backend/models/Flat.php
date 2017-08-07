@@ -50,7 +50,7 @@ class Flat extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id' => 'Flat Number',
             'number' => 'Number',
             'cost' => 'Cost',
             'bank_account' => 'Bank Account',

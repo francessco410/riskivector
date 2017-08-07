@@ -11,7 +11,8 @@ use backend\models\Person;
  * PersonSearch represents the model behind the search form about `backend\models\Person`.
  */
 class PersonSearch extends Person
-{
+{   
+    public $fullName;
     /**
      * @inheritdoc
      */
@@ -19,10 +20,9 @@ class PersonSearch extends Person
     {
         return [
             [['id'], 'integer'],
-            [['name', 'surname', 'email', 'sex', 'country', 'photo', 'phone'], 'safe'],
+            [['name', 'surname', 'email', 'sex', 'country', 'photo', 'phone','fullName'], 'safe'],
         ];
     }
-
     /**
      * @inheritdoc
      */
@@ -44,11 +44,23 @@ class PersonSearch extends Person
         $query = Person::find();
 
         // add conditions that should always apply here
-
+        
+        
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-
+        
+        $dataProvider->setSort([
+        'attributes' => [ 
+            'fullName' => [
+                'asc' => ['name' => SORT_ASC, 'surname' => SORT_ASC],
+                'desc' => ['name' => SORT_DESC, 'surname' => SORT_DESC],
+                'label' => 'Full Name',
+                'default' => SORT_ASC
+            ],
+        ]
+        ]);
+        
         $this->load($params);
 
         if (!$this->validate()) {
@@ -68,7 +80,11 @@ class PersonSearch extends Person
             ->andFilterWhere(['like', 'sex', $this->sex])
             ->andFilterWhere(['like', 'country', $this->country])
             ->andFilterWhere(['like', 'photo', $this->photo])
-            ->andFilterWhere(['like', 'phone', $this->phone]);
+            ->andFilterWhere(['like', 'phone', $this->phone])
+            ->andFilterWhere(['=', "concat(name,' ',surname)", $this->name_surname])
+            ->andWhere('name LIKE "%' . $this->fullName . '%" ' .
+                       'OR surname LIKE "%' . $this->fullName . '%"'
+            );
 
         return $dataProvider;
     }

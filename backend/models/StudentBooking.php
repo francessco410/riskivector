@@ -72,6 +72,34 @@ class StudentBooking extends \yii\db\ActiveRecord
             'person_booking_id' => 'Person Booking ID',
         ];
     }
+    
+    public function getInformations(){
+        $array = 
+            [
+                'Person' => 
+                    [
+                        'name' => $this->personBooking->name,
+                        'surname' => $this->personBooking->surname,
+                        'email' => $this->personBooking->email,
+                        'sex' => $this->personBooking->sex,
+                        'country' => $this->personBooking->country,
+                    ], 
+                'Student' => 
+                    [
+                        'home_university' => $this->home_university,
+                        'course' => $this->course,
+
+                    ], 
+                'Tenant' =>
+                    [
+                        'smoker'=> $this->personBooking->smoker,
+                        'months'=> $this->months,
+                        'departure_date' => date('Y-m-d', strtotime('+'.$this->months.' months', strtotime($this->arrival_date)))
+                    ]
+            ];
+
+        return $array;
+    }
 
     /**
      * @return \yii\db\ActiveQuery
