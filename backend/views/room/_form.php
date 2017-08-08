@@ -42,50 +42,6 @@ use kartik\select2\Select2;
     <?= $form->field($model, 'flat_id')->dropDownList(    
         ['prompt' => 'Select Flat']
     )?>
-    <?php  $flats = Flat::find()
-                ->one();
-        $roomsCount = backend\models\Room::find()
-                ->where(['flat_id' => $flats->id])
-                ->count();
-        $rooms = backend\models\Room::find()
-                ->where(['flat_id' => $flats->id])
-                ->all();
-        echo '<div class="btn-group" data-toggle="buttons">';
-        if($roomsCount > 0){
-            foreach ($rooms as $room){
-              
-                $tenant= backend\models\Tenant::find()->joinWith('tenantHasRooms')->where(['room_id'=>$room->id]);
-                $tenantCount=$tenant->count();
-                $tenant=$tenant->all();
-//                echo '<pre>';
-//                print_r($tenant[0]->person_id);
-//                echo '</pre>';
-//                die();
-                //echo "<option value='".$flat->id."'>".$flat->number."</option>";
-                echo '<label class="btn btn-info">'.
-                      "<input type='radio' name='options' id='option.'$room->id'.' autocomplete='off' > $room->number";
-                for($i=0;$i<$room->type;$i++){
-                    if($tenantCount>$i){
-                      $person= backend\models\Person::find()->where(['id'=>$tenant[$i]->person_id])->one();
-                      $student= backend\models\Student::find()->where(['person_id'=>$person->id])->one();
-                      echo "<br><h1>". $person->name." ".$person->surname."(".$person->sex.")".
-                           "<br>".$person->country."<br>".
-                              
-                           (($student!=null)?$student->course." ,".$student->home_university:" ").
-                           "</h1><br>";     
-                    }
-                    else
-                    {
-                        echo '<br><h1>Free Slot</h1><br>';  
-                    }
-                }
-                echo '</label>';
-            }
-        }else{
-            echo "<option> - </option>";
-        }
-        echo '</div>';
-        ?>
     
     
     <div class="form-group">

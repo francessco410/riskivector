@@ -64,6 +64,12 @@ class StudentBookingController extends Controller
      * @param integer $id
      * @return mixed
      */
+    public function actionPicker($id){
+        $this->layout = 'roomPickerLayout';
+        Yii::$app->RoomPicker->init_picker($id);
+    }
+
+
     public function actionView($id)
     {
         return $this->render('view', [

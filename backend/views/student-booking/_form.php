@@ -12,6 +12,7 @@ use backend\models\Condition;
 use backend\models\Product;
 use wbraganca\dynamicform\DynamicFormWidget;
 use amilna\elevatezoom\ElevateZoom;
+use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\StudentBooking */
@@ -69,15 +70,21 @@ use amilna\elevatezoom\ElevateZoom;
         ['prompt' => 'Select flat']
     )?>
     
-    <?= $form->field($model_room, 'id')->widget(Select2::classname(), 
-        [ 
-            'data' =>  ArrayHelper::map(\backend\models\Flat::find()->all(),'id','number'),
-            'language' => 'en',
-            'options' => ['placeholder' => 'Select flat'],
-            'pluginOptions' => [
-            //'allowClear' => true
-        ],
-    ]); ?>
+    <?= Html::button('More info',['value'=> Url::to("index.php?r=student-booking/picker"), 'class' => 'btn btn-success','id'=>'modalButton']) ?>
+    <?php
+        Modal::begin([
+            'header' => '<h4>test</h4>',
+            'id' => 'modal',
+            'size' => 'modal-lg', 
+        ]);
+        echo "<div id='modalContent'></div>";
+
+        Modal::end();
+        //Yii::$app->RoomPicker->init_picker(2);
+    ?>
+    
+    <?= $form->field($model_room, 'id')->textInput() ?>
+
     
     
     <div class="row">

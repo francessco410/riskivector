@@ -37,6 +37,9 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
+        'RoomPicker' => [
+            'class' => 'backend\components\RoomPicker',
+        ],
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,
