@@ -68,7 +68,7 @@ class CounterController extends Controller
         $model->user_id=Yii::$app->user->identity->id;
 
         if ($model->load(Yii::$app->request->post()) && $model->save() ) {
-            if(BillController::createBill()){
+            if(BillController::createBill($model)){
                 return $this->redirect(['view', 'id' => $model->id]);
             }
             else

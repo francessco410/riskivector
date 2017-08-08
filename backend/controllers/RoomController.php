@@ -138,10 +138,48 @@ class RoomController extends Controller
                 ->all();
         if($countFlats > 0){
             foreach ($flats as $flat){
-                echo "<option value='".$flat->number."'>".$flat->number."</option>";
+                echo "<option value='".$flat->id."'>".$flat->number."</option>";
             }
         }else{
             echo "<option> - </option>";
         }
     }
+    public function actionRooms(){
+//        $countFlats = Flat::find()
+//                ->where(['building_id' => $id])
+//                ->count();
+        $flats = Flat::find()
+                ->one();
+        $roomsCount = Room::find()
+                ->where(['flat_id' => $flats->id])
+                ->count();
+        $rooms = Room::find()
+                ->where(['flat_id' => $flats->id])
+                ->one();
+        echo '<div class="btn-group" data-toggle="buttons">';
+        if($roomsCount > 0){
+            foreach ($rooms as $room){
+                //echo "<option value='".$flat->id."'>".$flat->number."</option>";
+                echo '<label class="btn btn-primary">'+
+                      "<input type='radio' name='options' id='option.'$room->id'.' autocomplete='off' checked> .'$room->number'."
+                      +'</label>';
+            }
+        }else{
+            echo "<option> - </option>";
+        }
+        echo '</div>';
+        
+//        <div class="btn-group" data-toggle="buttons">
+//  <label class="btn btn-primary active">
+//    <input type="radio" name="options" id="option1" autocomplete="off" checked> Radio 1
+//  </label>
+//  <label class="btn btn-primary">
+//    <input type="radio" name="options" id="option2" autocomplete="off"> Radio 2
+//  </label>
+//  <label class="btn btn-primary">
+//    <input type="radio" name="options" id="option3" autocomplete="off"> Radio 3
+//  </label>
+//    </div>
+    }
+    
 }

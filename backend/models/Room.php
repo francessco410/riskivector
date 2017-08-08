@@ -40,6 +40,7 @@ class Room extends \yii\db\ActiveRecord
             [['cost', 'type', 'flat_id'], 'required'],
             [['cost'], 'number'],
             [['flat_id'], 'exist', 'skipOnError' => true, 'targetClass' => Flat::className(), 'targetAttribute' => ['flat_id' => 'id']],
+            [['fullName'],'safe']
         ];
     }
 

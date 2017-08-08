@@ -12,15 +12,16 @@ use backend\models\Room;
  */
 class RoomSearch extends Room
 {
-    
+    public $tenant_list;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'number', 'type', 'flat_id'], 'integer'],
+            [['id', 'number', 'type'], 'integer'],
             [['cost'], 'number'],
+            [['flat_id','tenant_list'],'safe']
         ];
     }
 
@@ -45,11 +46,19 @@ class RoomSearch extends Room
         $query = Room::find();
         
         // add conditions that should always apply here
+        $query->joinWith('flat');
+        $query->joinWith('flat.building');
+        $query->joinWith('tenantHasRooms.tenant.person');
         
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-
+         $dataProvider->sort->attributes['tenant_list'] = [
+            'asc' => ['person.name' => SORT_ASC],
+            'desc' => ['person.name' => SORT_DESC],
+             
+        ];
+         
         $this->load($params);
 
         if (!$this->validate()) {
@@ -65,8 +74,11 @@ class RoomSearch extends Room
             'number' => $this->number,
             'cost' => $this->cost,
             'type' => $this->type,
-            'flat_id' => $this->flat_id,
         ]);
+         $query->orFilterWhere(['like', 'building.name', $this->flat_id])
+               ->orFilterWhere(['like', 'flat.number', $this->flat_id])
+               ->orFilterWhere(['like', 'person.name', $this->tenant_list])
+               ->orFilterWhere(['like', 'person.surname', $this->tenant_list]);
 
         return $dataProvider;
     }

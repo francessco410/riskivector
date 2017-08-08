@@ -8,6 +8,7 @@ use backend\models\BillSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use backend\models\Counter; 
 
 /**
  * BillController implements the CRUD actions for Bill model.
@@ -125,15 +126,15 @@ class BillController extends Controller
     {
         $bill= new Bill();
         $bill->rent_cost=Bill::findBySql("select sum(cost) as rent_cost FROM room WHERE flat_id='$model->flat_id'")->one()->rent_cost;
-        $bill->water= countWater($model);
+        $bill->water= self::countWater($model);
 //        echo '<pre>';
 //        print_r($bill->water);
 //        echo '<pre>';
 //        die();
-        $bill->electricity= countElectricity($model);
-        $bill->gas=countGas($model);
-        $bill->other_expences=0;
-        $bill->dues=0;
+        $bill->electricity= self::countElectricity($model);
+        $bill->gas=self::countGas($model);
+        $bill->other_expences=self::countExpences($model);
+        $bill->dues=$bill->other_expences+$bill->gas+$bill->electricity+$bill->water+$bill->rent_cost;
         $bill->counter_id=$model->id;
         return $bill->save()?true:false;
     }
@@ -141,8 +142,11 @@ class BillController extends Controller
     function countWater($model)
 {
     $id= Counter::find()->where(['flat_id'=>$model->flat_id])->orderBy('id desc')->limit(2)->all();
-    $days=(strtotime (Counter::findOne($id[0]['id'])['date'])-strtotime (Counter::findOne($id[0]['id'])['date']))/(60*60*24);
-    $water=Counter::findOne($id[0]['id'])['water_total']-Counter::findOne($id[0]['id'])['water_total'];
+    if(count($id)<2){
+        return 0;
+    }
+    $days=(strtotime (Counter::findOne($id[0]['id'])['date'])-strtotime (Counter::findOne($id[1]['id'])['date']))/(60*60*24);
+    $water=Counter::findOne($id[0]['id'])['water_total']-Counter::findOne($id[1]['id'])['water_total'];
     $return=0;
     $model= \backend\models\WaterCompany::findBySql("SELECT * FROM water_company wc
                                                     INNER JOIN tariff ta on wc.id=ta.water_company_id 
@@ -190,6 +194,9 @@ class BillController extends Controller
 function countElectricity($model)
 {
     $id= Counter::find()->where(['flat_id'=>$model->flat_id])->orderBy('id desc')->limit(2)->all();
+    if(count($id)<2){
+        return 0;
+    }
     $days=(strtotime (Counter::findOne($id[0]['id'])['date'])-strtotime (Counter::findOne($id[1]['id'])['date']))/(60*60*24);
     $vazio=Counter::findOne($id[0]['id'])['vazio_value']-Counter::findOne($id[1]['id'])['vazio_value'];
     $ponta=Counter::findOne($id[0]['id'])['ponta_value']-Counter::findOne($id[1]['id'])['ponta_value'];
@@ -215,10 +222,13 @@ function countElectricity($model)
 function countGas($model)
 {
     $id= Counter::find()->where(['flat_id'=>$model->flat_id])->orderBy('id desc')->limit(2)->all();
+    if(count($id)<2){
+        return 0;
+    }
     $days=(strtotime (Counter::findOne($id[0]['id'])['date'])-strtotime (Counter::findOne($id[1]['id'])['date']))/(60*60*24);
     $gas=Counter::findOne($id[0]['id'])['gas_total']-Counter::findOne($id[1]['id'])['gas_total'];
     $return=0;
-    $model= \backend\models\ElectricityCompany::findBySql("SELECT * FROM gas_company gc
+    $model= \backend\models\GasCompany::findBySql("SELECT * FROM gas_company gc
                                                      INNER JOIN tariff ta on gc.id=ta.gas_company_id 
                                                      INNER join flat fl on ta.flat_id=fl.id where fl.id='$model->flat_id'")->one();
     if($days>=0&&$gas>0){
@@ -228,5 +238,24 @@ function countGas($model)
     (($days + 1) * $model->acesso_redes) * $model->national_taxa;
     return round($return,2);
 }
+}
+function countExpences($model)
+{
+    $id= Counter::find()->where(['flat_id'=>$model->flat_id])->orderBy('id desc')->limit(2)->all();
+    if(count($id)<2){
+        return 0;
+    }
+    $date1=$id[0]['date'];
+    $date2=$id[1]['date'];
+    $flat_id=$id[0]['flat_id'];
+    $return=Bill::findBySql("SELECT sum(amount)as other_expences FROM tenant_fine tf 
+                   INNER join tenant te on tf.tenant_id=te.id 
+                   inner join tenant_has_room thr on te.id=thr.tenant_id 
+                   INNER join room r on thr.room_id=r.id 
+                   inner join flat f on r.flat_id=f.id 
+                   WHERE f.id='$flat_id' and tf.date BETWEEN '$date2' and '$date1'
+                   and thr.check_out_date BETWEEN '$date2' and '$date1' 
+                   or thr.check_out_date is null;")->one();
+    return $return->other_expences;
 }
 }

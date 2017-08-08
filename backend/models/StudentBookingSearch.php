@@ -21,8 +21,8 @@ class StudentBookingSearch extends StudentBooking
     public function rules()
     {
         return [
-            [['id', 'months', 'room_type', 'kit', 'validated', 'person_booking_id'], 'integer'],
-            [['course', 'home_university', 'arrival_date', 'date', 'coment', 'personBooking.country', 'personBooking.name'], 'safe'],
+            [['id', 'months', 'room_type', 'kit', 'validated'], 'integer'],
+            [['course', 'home_university', 'arrival_date', 'date', 'coment', 'personBooking.country', 'personBooking.name', 'person_booking_id'], 'safe'],
         ];
     }
 
@@ -58,7 +58,7 @@ class StudentBookingSearch extends StudentBooking
             'desc' => ['person_booking.country' => SORT_DESC],
         ];
         
-        $dataProvider->sort->attributes['name'] = [
+        $dataProvider->sort->attributes['person_booking_id'] = [
             'asc' => ['person_booking.name' => SORT_ASC],
             'desc' => ['person_booking.name' => SORT_DESC],
         ];
@@ -86,8 +86,10 @@ class StudentBookingSearch extends StudentBooking
         $query->andFilterWhere(['like', 'course', $this->course])
             ->andFilterWhere(['like', 'home_university', $this->home_university])
             ->andFilterWhere(['like', 'coment', $this->coment])
-            ->andFilterWhere(['like', 'personBooking.country', $this->country])
-            ->andFilterWhere(['like', 'personBooking.name', $this->name]);
+            ->andFilterWhere(['like', 'person_booking.country', $this->country])
+            ->orFilterWhere(['like', 'person_booking.name', $this->person_booking_id])
+            ->orFilterWhere(['like', 'person_booking.surname', $this->person_booking_id]);
+        
 
         return $dataProvider;
     }

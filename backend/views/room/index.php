@@ -28,7 +28,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             [
-                'attribute' => 'stud',
+                'attribute' => 'flat_id',
+                'label'=>'Flat Name',
                 'format'=>'raw',
                 'value'=> function($model){
                     $flat = Flat::find()->where(['id' => $model->flat_id])->one();
@@ -37,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
                }
             ],
             [
-                'attribute' => 'students_name',
+                'attribute' => 'tenant_list',
                 'format'=>'raw',
                 'value'=> function($model){
                     $out = '';
@@ -60,17 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $out;
                }
             ],     
-            [
-                'attribute' => 'arrival_date',
-                'format'=>'raw',
-                'value'=> function($model){
-                    $out = '';
-                    foreach ($model->getInformation() as $info){
-                        $out .= $info['accommodation_date'].'<br>';
-                    }
-                    return $out;
-               }
-            ],
+            
             'number',
             [
                 'attribute' => 'type',
@@ -87,6 +78,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         case 3:
                             $out = 'Triple Room';
                             break;
+                    }
+                    return $out;
+               }
+            ],
+                    [
+                'attribute' => 'arrival_date',
+                'format'=>'raw',
+                'value'=> function($model){
+                    $out = '';
+                    foreach ($model->getInformation() as $info){
+                        $out .= $info['accommodation_date'].'<br>';
                     }
                     return $out;
                }
