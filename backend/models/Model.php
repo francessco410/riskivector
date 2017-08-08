@@ -40,4 +40,30 @@ class Model extends \yii\base\Model
 
         return $models;
     }
+    
+    public static function createMultipleN($modelClass, $post_arr, $bool)
+    {
+        if($bool == true){
+            $model    = new $modelClass;
+            $formName = $model->formName();
+            $post     = $post_arr[$formName];
+            $models   = [];
+
+            if ($post) {
+                foreach ($post as $i => $item) {
+                    if (isset($item['id']) && !empty($item['id']) && isset($multipleModels[$item['id']])) {
+                        $models[] = $multipleModels[$item['id']];
+                    } else {
+                        $models[] = new $modelClass;
+                    }
+                }
+            }
+
+            unset($model, $formName, $post);
+            
+            return $models;
+        }
+        
+        return $false;
+    }
 }

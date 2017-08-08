@@ -76,4 +76,17 @@ class ProductHasConditionWarehouse extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Warehouse::className(), ['id' => 'warehouse_id']);
     }
+    
+    public function buildArray(){
+        
+        $segment =
+        [
+             'product_id' => $this->product_id,
+             'condition_id' => $this->condition_id,
+             'warehouse_id' => $this->warehouse_id,
+             'amount' => $this->amount,
+        ];
+        
+        return $segment;
+    }
 }

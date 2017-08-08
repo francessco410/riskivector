@@ -75,20 +75,12 @@ class ProductController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             $modelPHCW = Model::createMultiple(ProductHasConditionWarehouse::classname());
-            echo '<pre>';
-            print_r(Yii::$app->request->post());
-            echo '</pre>';
-            die();
+
             Model::loadMultiple($modelPHCW, Yii::$app->request->post());
 
             // validate all models
             $valid = $model->validate();
             $valid = Model::validateMultiple($modelPHCW) && $valid;
-            
-            // echo '<pre>';
-            // print_r($modelPHCW);
-            // echo '</pre>';
-            // die();
 
             if ($valid) {
                 $transaction = \Yii::$app->db->beginTransaction();

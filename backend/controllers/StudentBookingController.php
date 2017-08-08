@@ -16,9 +16,9 @@ use backend\models\Student;
 use backend\models\Room;
 use backend\models\Building;
 use backend\models\Flat;
-use backend\models\ProductHasConditionWarehouse;
-use backend\models\Model;
 use backend\models\Warehouse;
+use backend\models\Product;
+use backend\models\Condition;
 
 /**
  * StudentBookingController implements the CRUD actions for StudentBooking model.
@@ -93,24 +93,9 @@ class StudentBookingController extends Controller
         $model_person ->load($model->getInformations());
         $model_tenant ->load($model->getInformations());
         
-        $modelPHCW = Model::createMultiple(ProductHasConditionWarehouse::classname());
-        
-        
-        $default_kit = 
-        [
-            'ProductHasConditionWarehouse' => 
-            [
-                'warehouse_id' => 1,
-                'condition_id',
-                'amount',
-            ],
-            [
-                'warehouse_id',
-                'condition_id',
-                'amount',
-            ],
-        ];
-        Model::loadMultiple($modelPHCW, $default_kit);
+        $default_kit = self::getDefaultKit();
+        $model_PHCW = Model::createMultipleN(ProductHasConditionWarehouse::classname(), $default_kit, true);
+        Model::loadMultiple($model_PHCW, $default_kit);
         
         
         
@@ -119,7 +104,42 @@ class StudentBookingController extends Controller
 //        $modelPHCW = $model -> productHasConditionWarehouses;
         
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model_person->load(Yii::$app->request->post())) {
+            
+            
+            $tmp = [
+                'Building' =>
+                [
+                    'id' => 1,
+                    //'name' => 'dsad',
+                    //'number' => 2,
+                    //'address_id' => 1,
+                ],
+            ];
+            
+           
+            
+            
+            $model_student->load(Yii::$app->request->post());
+            $model_person->load(Yii::$app->request->post());
+            $model_tenant->load(Yii::$app->request->post());
+            $model_building->load(Yii::$app->request->post());
+            $model_flat->load(Yii::$app->request->post());
+            $model_room->load(Yii::$app->request->post());
+            
+            
+            
+            echo '<pre>';
+            echo '----------------------------------------------------------><br>';
+            print_r($model_building);
+            echo '----------------------------------------------------------><br>';
+            print_r($model_flat);
+            echo '----------------------------------------------------------><br>';
+            print_r($model_room);
+            echo '----------------------------------------------------------><br>';
+            echo '</pre>';
+            die();
+            
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -143,6 +163,88 @@ class StudentBookingController extends Controller
      * @param integer $id
      * @return mixed
      */
+    
+    function getDefaultKit(){
+        
+//        $default_list = [
+//            'Electric heater' => 1,
+//            'TestBraganca' => 1,
+//            'Summer blanket' => 1,
+//            'Winter blanket' => 1,
+//            'Blanket cover' => 1,
+//            'Bed-sheet' => 2,
+//            'Pillow' => 1,
+//            'Pillow cover' => 1,
+//            'Towel' => 2,
+//            'Plate' => 1,
+//            'Cup' => 1,
+//            'Glass' => 1,
+//            'Fork' => 1,
+//            'Knife' => 1,
+//            'Spoon' => 1,
+//            'Bowl' => 1,
+//            'Sim card' => 1,
+//            '123' => 1,
+//        ];
+//        
+        
+        $default_list =
+                [
+                    '123' => 10,
+                    'Plates' => 2,
+                    '1º Sheets' => 5,
+                ];
+        
+        $products_output = array();
+        
+        foreach ($default_list as $product => $amount){
+            
+            if(isset($product, $amount)){
+                $product_id = Product::find()->where(['name' => $product])->one();
+                $product_id = isset($product_id) ? $product_id->id : FALSE;
+                if($product_id){
+                    $valid = self::warehouseValidation($product_id);
+                    $valid->amount = $amount;
+                    $products_output[] = $valid;
+                }
+            }
+        }
+
+        
+        $default_kit = 
+        [
+            'ProductHasConditionWarehouse' => [],
+        ];
+
+        foreach ($products_output as $item){
+            array_push($default_kit['ProductHasConditionWarehouse'], $item->buildArray());
+        }
+        
+        return $default_kit;
+    }
+    
+    function warehouseValidation($id){
+        $models = ProductHasConditionWarehouse::find()->where(['product_id' => $id])->all();
+        $output = array();
+        foreach ($models as $model){
+            $model = isset($model) && $model->amount > 0 ? $model : NULL;
+            if($model){
+                $output[] = $model;
+            }
+        }
+        
+        if(isset($output)){
+            $best = $output[0];
+            foreach ($output as $product){
+                $id = Condition::find()->where(['id' => $product->condition_id])->one();
+                $id = isset($id) ? $id->id : false;
+                $best = $id < $best->condition_id && $id != false ? $product : $best;
+            }         
+            return $best;
+        }
+        return false;
+    }
+
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);

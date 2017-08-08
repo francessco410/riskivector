@@ -32,7 +32,7 @@ class Building extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'number', 'address_id'], 'required'],
-            [['number', 'address_id'], 'integer'],
+            [['number', 'address_id', 'id'], 'integer'],
             [['name'], 'string', 'max' => 45],
             [['address_id'], 'exist', 'skipOnError' => true, 'targetClass' => Address::className(), 'targetAttribute' => ['address_id' => 'id']],
         ];
